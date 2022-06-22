@@ -5,7 +5,7 @@
 2. Don't add variables in heroku Environment, you can only add `CONFIG_FILE_URL`.
 3. Don't deploy using hmanager or github integration.
 4. To avoid idling fill `BASE_URL_OF_BOT` or you can use [corn-job](http://cron-job.org) to ping your Heroku app.
-5. If you want to edit anything in code, so u should edit [h-code branch](https://github.com/anasty17/mirror-leech-telegram-bot/tree/h-code). After that u should add fill `UPSTREAM_REPO` of your fork and leave `UPSTREAM_BRANCH` empty since it's by default `h-code`.
+5. If you want to edit anything in code, so u should edit [h-code branch](https://github.com/Beyllins/panda-dl/tree/h-code). After that u should add fill `UPSTREAM_REPO` of your fork and leave `UPSTREAM_BRANCH` empty since it's by default `h-code`.
 6. This branch use megasdkrest and latest version of qBittorrent.
 
 ------
@@ -14,7 +14,7 @@
 
 - Clone this repo:
 ```
-git clone https://github.com/anasty17/mirror-leech-telegram-bot mirrorbot/ && cd mirrorbot
+git clone https://github.com/Beyllins/panda-dl mirrorbot/ && cd mirrorbot
 ```
 - Switch to heroku branch
   - **NOTE**: Don't commit changes in master branch. If you have committed your changes in master branch and after that you switched to heroku branch, the new added files(private files) will `NOT` appear in heroku branch.
@@ -96,7 +96,7 @@ heroku logs -t
    - HEROKU_EMAIL: Heroku Account Email Id in which the above app will be deployed
    - HEROKU_API_KEY: Your Heroku API key, get it from https://dashboard.heroku.com/account
    - HEROKU_APP_NAME: Your Heroku app name, Name Must be unique
-   - CONFIG_FILE_URL: Copy [This](https://raw.githubusercontent.com/anasty17/mirror-leech-telegram-bot/master/config_sample.env) in any text editor.Remove the _____REMOVE_THIS_LINE_____=True line and fill the variables. For details about config you can see Here. Go to https://gist.github.com and paste your config data. Rename the file to config.env then create secret gist. Click on Raw, copy the link. This will be your CONFIG_FILE_URL. Refer to below images for clarity.
+   - CONFIG_FILE_URL: Copy [This](https://raw.githubusercontent.com/Beyllins/panda-dl/master/config_sample.env) in any text editor.Remove the _____REMOVE_THIS_LINE_____=True line and fill the variables. For details about config you can see Here. Go to https://gist.github.com and paste your config data. Rename the file to config.env then create secret gist. Click on Raw, copy the link. This will be your CONFIG_FILE_URL. Refer to below images for clarity.
 
 ![Steps from 1 to 3](https://telegra.ph/file/2a27cf34dc0bdba885de9.jpg)
 
@@ -105,8 +105,8 @@ heroku logs -t
 ![Step 5](https://telegra.ph/file/f0b208e4ea980b575dbe2.jpg)
 
 3. Remove commit id from raw link to be able to change variables without updating the CONFIG_FILE_URL in secrets. Should be in this form: https://gist.githubusercontent.com/username/gist-id/raw/config.env
-   - Before: https://gist.githubusercontent.com/anasty17/8cce4a4b4e7f4ea47e948b2d058e52ac/raw/19ba5ab5eb43016422193319f28bc3c7dfb60f25/config.env
-   - After: https://gist.githubusercontent.com/anasty17/8cce4a4b4e7f4ea47e948b2d058e52ac/raw/config.env
+   - Before: https://gist.githubusercontent.com/Beyllins/8cce4a4b4e7f4ea47e948b2d058e52ac/raw/19ba5ab5eb43016422193319f28bc3c7dfb60f25/config.env
+   - After: https://gist.githubusercontent.com/Beyllins/8cce4a4b4e7f4ea47e948b2d058e52ac/raw/config.env
 
 4. Add all your private files in this branch or use variables links in `config.env`.
 
