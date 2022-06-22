@@ -213,7 +213,7 @@ input[type="submit"]:hover, input[type="submit"]:focus{
 </style>
 </head>
 <body>
-  <!--© Designed and coded by @bipuldey19-Telegram-->
+  <!---->
     <header>
       <div class="brand">
         <img
@@ -225,7 +225,7 @@ input[type="submit"]:hover, input[type="submit"]:focus{
         </a>
       </div>
       <div class="social">
-        <a href="https://github.com/Beyllins/panda-dl"><i class="fab fa-github"></i></a>
+        <a href="https://www.github.com/Beyllins/panda-dl"><i class="fab fa-github"></i></a>
         <a href="Panda ??"><i class="fab fa-telegram"></i></a>
       </div>
     </header>
