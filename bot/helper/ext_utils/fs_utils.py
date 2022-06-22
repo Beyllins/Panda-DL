@@ -1,7 +1,7 @@
 from os import remove as osremove, path as ospath, mkdir, walk, listdir, rmdir, makedirs
 from sys import exit as sysexit
 from json import loads as jsnloads
-from shutil import rmtree
+from shutil import rmtree, disk_usage
 from PIL import Image
 from magic import Magic
 from subprocess import run as srun, check_output
@@ -10,7 +10,7 @@ from math import ceil
 from re import split as re_split, I
 
 from .exceptions import NotSupportedExtractionArchive
-from bot import aria2, app, LOGGER, DOWNLOAD_DIR, get_client, TG_SPLIT_SIZE, EQUAL_SPLITS
+from bot import aria2, app, LOGGER, DOWNLOAD_DIR, get_client, TG_SPLIT_SIZE, EQUAL_SPLITS, STORAGE_THRESHOLD
 
 VIDEO_SUFFIXES = ("M4V", "MP4", "MOV", "FLV", "WMV", "3GP", "MPG", "WEBM", "MKV", "AVI")
 
@@ -18,6 +18,7 @@ ARCH_EXT = [".tar.bz2", ".tar.gz", ".bz2", ".gz", ".tar.xz", ".tar", ".tbz2", ".
                 ".zip", ".7z", ".z", ".rar", ".iso", ".wim", ".cab", ".apm", ".arj", ".chm",
                 ".cpio", ".cramfs", ".deb", ".dmg", ".fat", ".hfs", ".lzh", ".lzma", ".mbr",
                 ".msi", ".mslz", ".nsis", ".ntfs", ".rpm", ".squashfs", ".udf", ".vhd", ".xar"]
+
 
 
 def clean_download(path: str):
@@ -76,6 +77,20 @@ def get_path_size(path: str):
             total_size += ospath.getsize(abs_path)
     return total_size
 
+def check_storage_threshold(size: int, arch=False, alloc=False):
+    if not alloc:
+        if not arch:
+            if disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
+                return False
+        elif disk_usage(DOWNLOAD_DIR).free - (size * 2) < STORAGE_THRESHOLD * 1024**3:
+            return False
+    elif not arch:
+        if disk_usage(DOWNLOAD_DIR).free < STORAGE_THRESHOLD * 1024**3:
+            return False
+    elif disk_usage(DOWNLOAD_DIR).free - size < STORAGE_THRESHOLD * 1024**3:
+        return False
+    return True
+
 def get_base_name(orig_path: str):
     ext = [ext for ext in ARCH_EXT if orig_path.lower().endswith(ext)]
     if len(ext) > 0:
@@ -100,12 +115,12 @@ def take_ss(video_file):
         duration = 3
     duration = duration // 2
 
-    status = srun(["ffmpeg", "-hide_banner", "-loglevel", "error", "-ss", str(duration),
-                        "-i", video_file, "-vframes", "1", des_dir])
+    status = srun(["new-api", "-hide_banner", "-loglevel", "error", "-ss", str(duration),
+                   "-i", video_file, "-vframes", "1", des_dir])
 
     if status.returncode != 0 or not ospath.lexists(des_dir):
         return None
-
+    
     with Image.open(des_dir) as img:
         img.convert("RGB").save(des_dir, "JPEG")
 
@@ -121,7 +136,7 @@ def split_file(path, size, file_, dirpath, split_size, start_time=0, i=1, inLoop
         while i <= parts :
             parted_name = "{}.part{}{}".format(str(base_name), str(i).zfill(3), str(extension))
             out_path = ospath.join(dirpath, parted_name)
-            srun(["ffmpeg", "-hide_banner", "-loglevel", "error", "-ss", str(start_time),
+            srun(["new-api", "-hide_banner", "-loglevel", "error", "-ss", str(start_time),
                   "-i", path, "-fs", str(split_size), "-map", "0", "-c", "copy", out_path])
             out_size = get_path_size(out_path)
             if out_size > 2097152000:
@@ -140,7 +155,7 @@ def split_file(path, size, file_, dirpath, split_size, start_time=0, i=1, inLoop
         srun(["split", "--numeric-suffixes=1", "--suffix-length=3", f"--bytes={split_size}", path, out_path])
 
 def get_media_info(path):
-
+    
     result = check_output(["ffprobe", "-hide_banner", "-loglevel", "error", "-print_format",
                            "json", "-show_format", path]).decode('utf-8')
 
@@ -148,7 +163,7 @@ def get_media_info(path):
     if fields is None:
         LOGGER.error(f"get_media_info: {result}")
         return 0, None, None
-
+    
     duration = round(float(fields.get('duration', 0)))
 
     fields = fields.get('tags')
